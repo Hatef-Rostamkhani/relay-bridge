@@ -21,7 +21,7 @@ on:
         default: false
         type: boolean
       include_termux:
-        description: "Publish Termux ARM64 and ARMv7 bundles"
+        description: "Publish Termux ARM64 bundle; ARMv7 is best-effort"
         required: false
         default: true
         type: boolean
@@ -153,7 +153,7 @@ jobs:
           path: release-assets/*
 
   build-termux:
-    name: Build termux-arm64-armv7
+    name: Build termux-arm64
     runs-on: ubuntu-latest
     continue-on-error: true
     if: github.event_name == 'push' || github.event.inputs.include_termux == 'true'
@@ -170,7 +170,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Build Termux binaries (arm64 + armv7)
+      - name: Build Termux binaries
         shell: bash
         run: |
           set -euo pipefail
@@ -197,7 +197,7 @@ jobs:
             rm -rf dist build *.spec || true
 
             # Use Alpine with QEMU for reliable cross-platform builds
-            docker run --rm --platform "$platform" \
+            if ! docker run --rm --platform "$platform" \
               -v "$PWD:/work" \
               -w /work \
               alpine:latest \
@@ -212,28 +212,36 @@ jobs:
                 pip install -r requirements.txt
                 echo "Building binary for '"'"'${arch}'"'"'..."
                 pyinstaller --noconfirm --clean --onefile --name RelayBridge --paths src main.py
-              '
+              '; then
+              echo "ERROR: Container build failed for ${arch}" >&2
+              return 1
+            fi
 
             if [ ! -f dist/RelayBridge ]; then
               echo "ERROR: Missing binary output for ${arch}" >&2
-              exit 1
+              return 1
             fi
             cp dist/RelayBridge "termux-dist/RelayBridge-${arch}"
             chmod +x "termux-dist/RelayBridge-${arch}"
             echo "✓ Successfully built for ${arch}"
           }
 
-          # Build both ARM architectures
+          # ARM64 is the primary supported Termux target. ARMv7 is best-effort
+          # because current Python/Rust wheels often require fragile source builds.
           build_termux_arch "arm64" "linux/arm64" "aarch64"
-          build_termux_arch "armv7" "linux/arm/v7" "arm"
+          if ! build_termux_arch "armv7" "linux/arm/v7" "arm"; then
+            echo "::warning::Termux armv7 build failed; publishing arm64 Termux bundle only."
+          fi
 
           echo ""
           echo "Packaging releases..."
-          for arch in arm64 armv7; do
+          for binary in termux-dist/RelayBridge-*; do
+            [ -f "$binary" ] || continue
+            arch="${binary##*-}"
             staging="termux-staging-${arch}"
             rm -rf "$staging"
             mkdir -p "$staging"
-            cp "termux-dist/RelayBridge-${arch}" "$staging/RelayBridge"
+            cp "$binary" "$staging/RelayBridge"
             chmod +x "$staging/RelayBridge"
             
             [ -f config.example.json ] && cp config.example.json "$staging/"
