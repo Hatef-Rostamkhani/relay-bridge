@@ -198,6 +198,7 @@ jobs:
 
             # Use Alpine with QEMU for reliable cross-platform builds
             if ! docker run --rm --platform "$platform" \
+              -e ARCH="$arch" \
               -v "$PWD:/work" \
               -w /work \
               alpine:latest \
@@ -210,7 +211,7 @@ jobs:
                 . /tmp/relaybridge-venv/bin/activate
                 python -m pip install --upgrade pip pyinstaller
                 pip install -r requirements.txt
-                echo "Building binary for '"'"'${arch}'"'"'..."
+                echo "Building binary for ${ARCH}..."
                 pyinstaller --noconfirm --clean --onefile --name RelayBridge --paths src main.py
               '; then
               echo "ERROR: Container build failed for ${arch}" >&2
