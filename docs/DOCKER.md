@@ -59,6 +59,12 @@ docker pull ghcr.io/hatef-rostamkhani/relaybridge:latest
 
 If `docker pull` from GHCR is blocked on your network, download the Docker image archive from the GitHub Release assets instead.
 
+Stable release download URL format:
+
+```text
+https://github.com/Hatef-Rostamkhani/relay-bridge/releases/download/vX.Y.Z/RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz
+```
+
 Choose the file for your CPU architecture:
 
 | File | Use |

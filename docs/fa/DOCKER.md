@@ -33,6 +33,12 @@ docker compose up --build
 
 اگر `docker pull` از GHCR روی شبکه شما خطا می‌دهد، می‌توانید فایل Docker image را از GitHub Release دانلود کنید.
 
+قالب لینک پایدار Release به این شکل است:
+
+```text
+https://github.com/Hatef-Rostamkhani/relay-bridge/releases/download/vX.Y.Z/RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz
+```
+
 فایل مناسب معماری سیستم را انتخاب کنید:
 
 | فایل | کاربرد |
