@@ -2,6 +2,8 @@
 
 **زبان:** [English](README.md) | فارسی
 
+
+<div dir="rtl" lang="fa" style="text-align: right;">
 RelayBridge یک پراکسی محلی HTTP/SOCKS5 است که ترافیک وب را از مسیر یک رله Google Apps Script که خودتان deploy می‌کنید عبور می‌دهد. این پروژه برای تست، پژوهش، و استفاده شخصی طراحی شده است؛ نه برای جایگزینی کامل VPNهای سطح سیستم.
 
 RelayBridge یک VPN واقعی در سطح IP نیست. این پروژه نمی‌تواند هر نوع TCP/UDP خام را از Google Apps Script عبور دهد. در حالت HTTPS relay، پراکسی محلی با CA تولیدشده خودش TLS را به صورت محلی intercept می‌کند، درخواست HTTP را به payload قابل ارسال به رله تبدیل می‌کند، و پاسخ را دوباره برای مرورگر بازسازی می‌کند.
@@ -13,6 +15,8 @@ RelayBridge یک VPN واقعی در سطح IP نیست. این پروژه نم�
   -> رله Google Apps Script شما
   -> سایت مقصد
 ```
+
+![معماری RelayBridge](docs/persian-infra.png)
 
 ## قابلیت‌ها
 
@@ -26,11 +30,15 @@ RelayBridge یک VPN واقعی در سطح IP نیست. این پروژه نم�
 
 ## محدودیت‌های مهم
 
-- RelayBridge جایگزین OpenVPN، WireGuard، یا VPN کامل سیستم نیست.
-- Google Apps Script فقط برای fetch کردن HTTP/HTTPS مناسب است.
-- OpenVPN، SSH، UDP، و پروتکل‌های غیر HTTP معمولا فقط direct tunnel می‌شوند یا شکست می‌خورند.
+<div dir="rtl" lang="fa" style="text-align: right;">
+
+- این RelayBridge جایگزین OpenVPN، WireGuard، یا VPN کامل سیستم نیست.
+- سرویس Google Apps Script فقط برای fetch کردن HTTP/HTTPS مناسب است.
+- پروتکل های OpenVPN، SSH، UDP، و پروتکل‌های غیر HTTP معمولا فقط direct tunnel می‌شوند یا شکست می‌خورند.
 - برای HTTPS relay باید `ca/ca.crt` را روی دستگاه client به عنوان trusted root نصب کنید.
-- مصرف سنگین می‌تواند quota روزانه Google Apps Script را تمام کند.
+- مصرف سنگین می‌تواند quota مربوط به `URL Fetch calls` در Google Apps Script را تمام کند: طبق مستند Google، فعلا ۲۰٬۰۰۰ call در روز برای حساب‌های معمولی و ۱۰۰٬۰۰۰ call در روز برای Google Workspace است؛ این سهمیه برای هر کاربر جداست و ۲۴ ساعت بعد از اولین request reset می‌شود. منبع: [Apps Script quotas](https://developers.google.com/apps-script/guides/services/quotas).
+
+</div>
 
 ## مستندات
 
@@ -49,19 +57,19 @@ RelayBridge یک VPN واقعی در سطح IP نیست. این پروژه نم�
 
 قبل از اجرای پراکسی محلی، باید یک رله Google Apps Script بسازید.
 
-1. وارد [Google Apps Script](https://script.google.com/) شوید.
-2. یک پروژه جدید بسازید.
-3. محتوای کامل [apps_script/Code.gs](apps_script/Code.gs) را داخل editor قرار دهید.
-4. مقدار `AUTH_KEY` را با یک secret طولانی و تصادفی جایگزین کنید:
-
-   ```javascript
-   const AUTH_KEY = "your-long-random-secret";
-   ```
-
-5. پروژه را به صورت Web App deploy کنید.
-6. گزینه **Execute as** را روی **Me** بگذارید.
-7. گزینه **Who has access** را روی **Anyone** بگذارید.
-8. Deployment ID را کپی کنید.
+<ol dir="rtl" lang="fa">
+  <li>وارد <a href="https://script.google.com/">Google Apps Script</a> شوید.</li>
+  <li>یک پروژه جدید بسازید.</li>
+  <li>محتوای کامل <a href="apps_script/Code.gs">apps_script/Code.gs</a> را داخل editor قرار دهید.</li>
+  <li>
+    مقدار <code>AUTH_KEY</code> را با یک secret طولانی و تصادفی جایگزین کنید:
+    <pre dir="ltr"><code class="language-javascript">const AUTH_KEY = "your-long-random-secret";</code></pre>
+  </li>
+  <li>پروژه را به صورت Web App deploy کنید.</li>
+  <li>گزینه <strong>Execute as</strong> را روی <strong>Me</strong> بگذارید.</li>
+  <li>گزینه <strong>Who has access</strong> را روی <strong>Anyone</strong> بگذارید.</li>
+  <li>Deployment ID را کپی کنید.</li>
+</ol>
 
 سپس پروژه را دریافت و اجرا کنید:
 
@@ -70,20 +78,32 @@ git clone https://github.com/Hatef-Rostamkhani/RelayBridge.git
 cd RelayBridge
 ```
 
+<div dir="rtl" lang="fa">
+
 در Windows:
+
+</div>
 
 ```cmd
 start.bat
 ```
 
+<div dir="rtl" lang="fa">
+
 در Linux یا macOS:
+
+</div>
 
 ```bash
 chmod +x start.sh
 ./start.sh
 ```
 
+<div dir="rtl" lang="fa">
+
 لانچر virtualenv می‌سازد، وابستگی‌ها را نصب می‌کند، اگر `config.json` وجود نداشته باشد setup wizard را اجرا می‌کند، و سپس پراکسی را بالا می‌آورد.
+
+</div>
 
 ## تنظیم پراکسی مرورگر
 
@@ -136,3 +156,4 @@ MIT License.
 Copyright (c) 2026 Hatef Rostamkhani.
 
 نویسنده اصلی: Amin Mahmoudi.
+</div>

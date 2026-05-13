@@ -14,6 +14,8 @@ Browser or app
   -> Target website
 ```
 
+![RelayBridge architecture](docs/english-infra.png)
+
 ## What It Does
 
 - Provides an HTTP proxy on `127.0.0.1:8085`.
@@ -30,7 +32,7 @@ Browser or app
 - Google Apps Script can fetch HTTP/HTTPS resources; it cannot transport arbitrary raw protocols.
 - OpenVPN, SSH, UDP, and non-HTTP application protocols normally fall back to direct TCP tunneling or fail.
 - HTTPS relay mode requires trusting the generated local CA on the client device.
-- Heavy traffic can exhaust Google Apps Script quotas.
+- Heavy traffic can exhaust the Google Apps Script `URL Fetch calls` quota: currently 20,000 calls/day for consumer accounts and 100,000 calls/day for Google Workspace accounts, per user, reset 24 hours after the first request. See Google's [Apps Script quotas](https://developers.google.com/apps-script/guides/services/quotas).
 
 ## Documentation
 
