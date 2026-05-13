@@ -155,6 +155,7 @@ jobs:
   build-termux:
     name: Build termux-arm64-armv7
     runs-on: ubuntu-latest
+    continue-on-error: true
     if: github.event_name == 'push' || github.event.inputs.include_termux == 'true'
 
     steps:
