@@ -55,6 +55,36 @@ Pull it with:
 docker pull ghcr.io/hatef-rostamkhani/relaybridge:latest
 ```
 
+## Download Image Without GHCR
+
+If `docker pull` from GHCR is blocked on your network, download the Docker image archive from the GitHub Release assets instead.
+
+Choose the file for your CPU architecture:
+
+| File | Use |
+|------|-----|
+| `RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz` | Most Intel/AMD PCs and VPS servers |
+| `RelayBridge-docker-vX.Y.Z-linux-arm64.tar.gz` | ARM64 servers, Apple Silicon Linux VMs, and many ARM devices |
+
+Verify and load the image:
+
+```bash
+sha256sum -c RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz.sha256
+docker load -i RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz
+```
+
+Run the loaded image:
+
+```bash
+docker run -d --name relaybridge --restart unless-stopped \
+  -p 8085:8085 -p 1080:1080 \
+  -v "$PWD/config.json:/app/config.json:ro" \
+  -v "$PWD/ca:/app/ca" \
+  relaybridge:vX.Y.Z
+```
+
+For branch builds, GitHub Actions also uploads temporary Docker archive artifacts named like `docker-image-sha-<commit>-linux-amd64`. GitHub may wrap those artifacts in a ZIP download; extract the ZIP first, then run `docker load -i` on the `.tar.gz` file inside it. Release assets are the recommended option for normal users because they are stable public downloads.
+
 The compose file exposes:
 
 | Port | Use |

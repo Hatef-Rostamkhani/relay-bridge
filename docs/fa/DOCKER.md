@@ -29,6 +29,36 @@ docker compose up --build
 
 اگر از HTTPS استفاده می‌کنید، باید گواهی ساخته‌شده در `ca/ca.crt` را روی سیستم یا مرورگر trust کنید.
 
+## دانلود Image بدون GHCR
+
+اگر `docker pull` از GHCR روی شبکه شما خطا می‌دهد، می‌توانید فایل Docker image را از GitHub Release دانلود کنید.
+
+فایل مناسب معماری سیستم را انتخاب کنید:
+
+| فایل | کاربرد |
+|------|--------|
+| `RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz` | بیشتر PCها، لپ‌تاپ‌ها، و VPSهای Intel/AMD |
+| `RelayBridge-docker-vX.Y.Z-linux-arm64.tar.gz` | سرورهای ARM64 و دستگاه‌های ARM |
+
+فایل را بررسی و load کنید:
+
+```bash
+sha256sum -c RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz.sha256
+docker load -i RelayBridge-docker-vX.Y.Z-linux-amd64.tar.gz
+```
+
+سپس image را اجرا کنید:
+
+```bash
+docker run -d --name relaybridge --restart unless-stopped \
+  -p 8085:8085 -p 1080:1080 \
+  -v "$PWD/config.json:/app/config.json:ro" \
+  -v "$PWD/ca:/app/ca" \
+  relaybridge:vX.Y.Z
+```
+
+برای buildهای branch، GitHub Actions یک artifact موقت با نامی شبیه `docker-image-sha-<commit>-linux-amd64` می‌سازد. ممکن است GitHub این artifact را داخل ZIP دانلود کند؛ ابتدا ZIP را extract کنید و بعد روی فایل `.tar.gz` داخل آن `docker load -i` بزنید. برای کاربران نهایی، فایل‌های GitHub Release گزینه پایدارتر و پیشنهادی هستند.
+
 ## توقف
 
 ```bash
