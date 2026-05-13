@@ -74,8 +74,8 @@ RelayBridge یک VPN واقعی در سطح IP نیست. این پروژه نم�
 سپس پروژه را دریافت و اجرا کنید:
 
 ```bash
-git clone https://github.com/Hatef-Rostamkhani/RelayBridge.git
-cd RelayBridge
+git clone https://github.com/Hatef-Rostamkhani/relay-bridge.git
+cd relay-bridge
 ```
 
 <div dir="rtl" lang="fa">

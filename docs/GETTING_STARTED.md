@@ -15,14 +15,14 @@ Choose whichever option works on your network.
 
 **Option A: ZIP**
 
-[Click to Download](https://github.com/Hatef-Rostamkhani/RelayBridge/archive/refs/heads/main.zip)
+[Click to Download](https://github.com/Hatef-Rostamkhani/relay-bridge/archive/refs/heads/main.zip)
 
 
 **Option B: Git**
 
 ```bash
-git clone https://github.com/Hatef-Rostamkhani/RelayBridge.git
-cd RelayBridge
+git clone https://github.com/Hatef-Rostamkhani/relay-bridge.git
+cd relay-bridge
 ```
 
 ## 2. Deploy The Google Relay

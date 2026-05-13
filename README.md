@@ -68,8 +68,8 @@ Before starting the local proxy, deploy the Google Apps Script relay.
 Then clone and run RelayBridge:
 
 ```bash
-git clone https://github.com/Hatef-Rostamkhani/RelayBridge.git
-cd RelayBridge
+git clone https://github.com/Hatef-Rostamkhani/relay-bridge.git
+cd relay-bridge
 ```
 
 On Windows:

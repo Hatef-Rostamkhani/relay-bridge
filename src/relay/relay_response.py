@@ -395,8 +395,8 @@ def _build_502_html(message: str) -> str:
     <div class="card">
         <div class="resource-bar">
             <span class="resource-title">RelayBridge</span>
-            <a class="resource-link" href="https://github.com/Hatef-Rostamkhani/RelayBridge" target="_blank" rel="noopener noreferrer">Repository</a>
-            <a class="resource-link" href="https://github.com/Hatef-Rostamkhani/RelayBridge/blob/main/docs/TROUBLESHOOTING.md" target="_blank" rel="noopener noreferrer">Troubleshooting</a>
+            <a class="resource-link" href="https://github.com/Hatef-Rostamkhani/relay-bridge" target="_blank" rel="noopener noreferrer">Repository</a>
+            <a class="resource-link" href="https://github.com/Hatef-Rostamkhani/relay-bridge/blob/main/docs/TROUBLESHOOTING.md" target="_blank" rel="noopener noreferrer">Troubleshooting</a>
         </div>
         <div class="card-header">
             <div class="badge"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 20h20L12 2z" stroke="#f87171" stroke-width="2" stroke-linejoin="round"/><line x1="12" y1="10" x2="12" y2="14" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="#f87171"/></svg></div>

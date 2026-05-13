@@ -57,10 +57,10 @@ SSH into your VPS and run **one** of these:
 
 ```bash
 # with curl:
-curl -fsSL https://raw.githubusercontent.com/Hatef-Rostamkhani/RelayBridge/main/apps_script/setup_vps_exit_node.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/Hatef-Rostamkhani/relay-bridge/refs/heads/main/apps_script/setup_vps_exit_node.sh | sudo bash
 
 # with wget:
-wget -qO- https://raw.githubusercontent.com/Hatef-Rostamkhani/RelayBridge/main/apps_script/setup_vps_exit_node.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/Hatef-Rostamkhani/relay-bridge/refs/heads/main/apps_script/setup_vps_exit_node.sh | sudo bash
 ```
 
 The script automatically downloads `vps_exit_node.py` from GitHub, so no `git clone` is needed first. It will ask for a port (default: 8181) and a PSK (auto-generates one if left blank), then install everything and print the `config.json` snippet at the end.

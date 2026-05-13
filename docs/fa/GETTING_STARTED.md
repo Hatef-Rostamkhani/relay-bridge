@@ -7,16 +7,16 @@
 **با Git:**
 
 ```bash
-git clone https://github.com/Hatef-Rostamkhani/RelayBridge.git
-cd RelayBridge
+git clone https://github.com/Hatef-Rostamkhani/relay-bridge.git
+cd relay-bridge
 ```
 
 **با ZIP:**
 
-- صفحه [GitHub پروژه](https://github.com/Hatef-Rostamkhani/RelayBridge) را باز کنید.
+- صفحه [GitHub پروژه](https://github.com/Hatef-Rostamkhani/relay-bridge) را باز کنید.
 - روی **Code** -> **Download ZIP** کلیک کنید.
 - فایل ZIP را extract کنید.
-- داخل پوشه `RelayBridge` یک terminal باز کنید.
+- داخل پوشه پروژه extract شده یک terminal باز کنید.
 
 ## 2. ساخت رله Google
 

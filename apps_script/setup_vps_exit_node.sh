@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-GITHUB_RAW="https://raw.githubusercontent.com/Hatef-Rostamkhani/RelayBridge/main/apps_script"
+VPS_EXIT_NODE_URL="https://raw.githubusercontent.com/Hatef-Rostamkhani/relay-bridge/refs/heads/main/apps_script/vps_exit_node.py"
 
 # ── Colours ──────────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
@@ -33,9 +33,9 @@ fi
 PYTHON_SCRIPT="/tmp/vps_exit_node.py"
 info "Fetching vps_exit_node.py from GitHub..."
 if command -v curl &>/dev/null; then
-  curl -fsSL "$GITHUB_RAW/vps_exit_node.py" -o "$PYTHON_SCRIPT"
+  curl -fsSL "$VPS_EXIT_NODE_URL" -o "$PYTHON_SCRIPT"
 elif command -v wget &>/dev/null; then
-  wget -qO "$PYTHON_SCRIPT" "$GITHUB_RAW/vps_exit_node.py"
+  wget -qO "$PYTHON_SCRIPT" "$VPS_EXIT_NODE_URL"
 else
   error "Neither curl nor wget is available. Install one and retry."
   exit 1
@@ -134,7 +134,7 @@ SERVICE_FILE="/etc/systemd/system/exit-node.service"
 cat > "$SERVICE_FILE" <<EOF
 [Unit]
 Description=RelayBridge Exit Node
-Documentation=https://github.com/Hatef-Rostamkhani/RelayBridge
+Documentation=https://github.com/Hatef-Rostamkhani/relay-bridge
 After=network-online.target
 Wants=network-online.target
 

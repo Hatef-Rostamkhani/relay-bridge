@@ -294,7 +294,7 @@ def print_banner(version: str, *, stream=None) -> None:
         "     |_| |_| |_|   |_| |_|      |_| \\_\\_____|_____/_/   \\_\\_|  ",
     ]
     version_line = f"Version {version}"
-    link = "https://github.com/Hatef-Rostamkhani/RelayBridge"
+    link = "https://github.com/Hatef-Rostamkhani/relay-bridge"
     width = max(max(len(line) for line in art), len(version_line), len(link))
     rule = "=" * width
 

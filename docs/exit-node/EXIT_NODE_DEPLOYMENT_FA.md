@@ -71,13 +71,13 @@ const PSK = "CHANGE_ME_TO_A_STRONG_SECRET";
 دستور نصب سریع:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Hatef-Rostamkhani/RelayBridge/main/apps_script/setup_vps_exit_node.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/Hatef-Rostamkhani/relay-bridge/refs/heads/main/apps_script/setup_vps_exit_node.sh | sudo bash
 ```
 
 یا:
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/Hatef-Rostamkhani/RelayBridge/main/apps_script/setup_vps_exit_node.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/Hatef-Rostamkhani/relay-bridge/refs/heads/main/apps_script/setup_vps_exit_node.sh | sudo bash
 ```
 
 ## ۶) تنظیم RelayBridge
