@@ -204,9 +204,11 @@ jobs:
               sh -c '
                 set -euo pipefail
                 echo "Installing build dependencies..."
-                apk add --no-cache python3 py3-pip make gcc musl-dev openssl-dev libffi-dev rust cargo
+                apk add --no-cache python3 python3-dev py3-pip py3-virtualenv make gcc musl-dev zlib-dev openssl-dev libffi-dev rust cargo
                 echo "Installing Python packages..."
-                python3 -m pip install --upgrade pip pyinstaller
+                python3 -m venv /tmp/relaybridge-venv
+                . /tmp/relaybridge-venv/bin/activate
+                python -m pip install --upgrade pip pyinstaller
                 pip install -r requirements.txt
                 echo "Building binary for '"'"'${arch}'"'"'..."
                 pyinstaller --noconfirm --clean --onefile --name RelayBridge --paths src main.py
