@@ -57,6 +57,22 @@ The artifact contains:
 - `RelayBridge-android-debug-sha-<commit>.apk`
 - `RelayBridge-android-debug-sha-<commit>.apk.sha256`
 
+## GitHub Release Download
+
+Version releases also publish the debug APK as a release asset:
+
+```text
+https://github.com/Hatef-Rostamkhani/relay-bridge/releases/download/vX.Y.Z/RelayBridge-android-vX.Y.Z-debug.apk
+```
+
+Verify it with the matching checksum:
+
+```bash
+sha256sum -c RelayBridge-android-vX.Y.Z-debug.apk.sha256
+```
+
+Release assets are better for normal downloads because they stay attached to the public release page. Actions artifacts are temporary and mainly useful for testing branch builds.
+
 ## Certificate Handling
 
 The app can generate and export `ca.crt`, but Android trust installation must be done by the user. On most devices this is under security or encryption settings.

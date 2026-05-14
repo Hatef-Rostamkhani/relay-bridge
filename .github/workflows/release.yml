@@ -353,10 +353,75 @@ jobs:
           name: release-docker-${{ matrix.arch }}
           path: release-assets/*
 
+  build-android-apk:
+    name: Build Android debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          set +o pipefail
+          yes | "$sdkmanager" --licenses >/dev/null
+          set -o pipefail
+          "$sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build and test debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd android
+          chmod +x ./gradlew
+          ./gradlew --no-daemon :app:assembleDebug :app:testDebugUnitTest
+
+      - name: Package Android release artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            tag="${GITHUB_REF_NAME}"
+          elif [[ -n "${{ github.event.inputs.release_tag || '' }}" ]]; then
+            tag="${{ github.event.inputs.release_tag }}"
+          else
+            tag="sha-${GITHUB_SHA::7}"
+          fi
+
+          if ! [[ "$tag" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
+            echo "Invalid Android release tag: $tag" >&2
+            exit 1
+          fi
+
+          apk_name="RelayBridge-android-${tag}-debug.apk"
+          mkdir -p release-assets
+          cp android/app/build/outputs/apk/debug/app-debug.apk "release-assets/${apk_name}"
+          (
+            cd release-assets
+            sha256sum "${apk_name}" > "${apk_name}.sha256"
+            sha256sum -c "${apk_name}.sha256"
+          )
+
+      - name: Upload Android APK artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-android-debug
+          path: release-assets/*
+
   publish-release:
     name: Publish GitHub Release
     runs-on: ubuntu-latest
-    needs: [build-binaries, build-termux, build-docker-archives]
+    needs: [build-binaries, build-termux, build-docker-archives, build-android-apk]
     if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true' && startsWith(github.event.inputs.release_tag, 'v')))
 
     steps:
@@ -386,6 +451,7 @@ jobs:
         with:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.release_tag }}
           files: final-assets/*
+          overwrite_files: true
           generate_release_notes: true
           prerelease: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.make_public != 'true' }}
           draft: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.make_public != 'true' }}
