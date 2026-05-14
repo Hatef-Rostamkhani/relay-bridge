@@ -1,0 +1,67 @@
+name: Android APK
+
+on:
+  push:
+    branches:
+      - android
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    name: Build Android debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$sdkmanager" --licenses >/dev/null
+          "$sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build and test debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd android
+          chmod +x ./gradlew
+          ./gradlew --no-daemon :app:assembleDebug :app:testDebugUnitTest
+
+      - name: Package APK artifact
+        id: artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          short_sha="${GITHUB_SHA::7}"
+          out_dir="android-artifacts"
+          apk_name="RelayBridge-android-debug-sha-${short_sha}.apk"
+          mkdir -p "$out_dir"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "${out_dir}/${apk_name}"
+          (
+            cd "$out_dir"
+            sha256sum "$apk_name" > "${apk_name}.sha256"
+          )
+          echo "name=RelayBridge-android-debug-sha-${short_sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: android-artifacts/*
+          retention-days: 30

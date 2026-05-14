@@ -40,6 +40,7 @@ Browser or app
 |-------|------|
 | Getting started | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
 | Docker | [docs/DOCKER.md](docs/DOCKER.md) |
+| Android MVP | [docs/ANDROID.md](docs/ANDROID.md) |
 | Configuration | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
 | Security | [docs/SECURITY.md](docs/SECURITY.md) |
 | Troubleshooting | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
