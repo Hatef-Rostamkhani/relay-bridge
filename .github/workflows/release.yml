@@ -156,7 +156,7 @@ jobs:
     name: Build termux-arm64
     runs-on: ubuntu-latest
     continue-on-error: true
-    if: github.event_name == 'push' || github.event.inputs.include_termux == 'true'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.include_termux == 'true'
 
     steps:
       - name: Checkout
