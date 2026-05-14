@@ -38,5 +38,15 @@ Thumbs.db
 # Temp MITM certs
 domainfront_certs_*/
 
+# Android
+android/.gradle/
+android/local.properties
+android/**/build/
+android/captures/
+android/.idea/
+*.apk
+*.ap_
+*.aab
+
 # Local scripts (excluded from git pushes)
 scripts/

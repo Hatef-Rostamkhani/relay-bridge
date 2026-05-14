@@ -46,6 +46,7 @@ RelayBridge یک VPN واقعی در سطح IP نیست. این پروژه نم�
 |-------|------|
 | شروع سریع | [docs/fa/GETTING_STARTED.md](docs/fa/GETTING_STARTED.md) |
 | Docker | [docs/fa/DOCKER.md](docs/fa/DOCKER.md) |
+| Android MVP | [docs/ANDROID.md](docs/ANDROID.md) |
 | تنظیمات | [docs/fa/CONFIGURATION.md](docs/fa/CONFIGURATION.md) |
 | امنیت | [docs/fa/SECURITY.md](docs/fa/SECURITY.md) |
 | عیب‌یابی | [docs/fa/TROUBLESHOOTING.md](docs/fa/TROUBLESHOOTING.md) |

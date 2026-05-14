@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="relaybridge_bg">#F7F8FA</color>
+    <color name="relaybridge_text">#17202A</color>
+    <color name="relaybridge_primary">#0F766E</color>
+    <color name="relaybridge_accent">#334155</color>
+</resources>
