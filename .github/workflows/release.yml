@@ -46,10 +46,6 @@ jobs:
             platform: linux
             arch: amd64
             optional: false
-          - os: macos-13
-            platform: macos
-            arch: amd64
-            optional: false
           - os: macos-14
             platform: macos
             arch: arm64
