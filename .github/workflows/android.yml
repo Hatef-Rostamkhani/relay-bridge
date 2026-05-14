@@ -32,7 +32,9 @@ jobs:
         run: |
           set -euo pipefail
           sdkmanager="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          set +o pipefail
           yes | "$sdkmanager" --licenses >/dev/null
+          set -o pipefail
           "$sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build and test debug APK
