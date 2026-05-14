@@ -143,7 +143,7 @@ class MainActivity : Activity() {
         EditText(this).apply {
             hint = hintValue
             setText(textValue)
-            singleLine = true
+            setSingleLine(true)
             textSize = 16f
             setTextColor(getColor(R.color.relaybridge_text))
             setHintTextColor(getColor(R.color.relaybridge_accent))
