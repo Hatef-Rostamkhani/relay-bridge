@@ -50,6 +50,12 @@
 	},
 	"log_level": "INFO",
 	"adblock_lists": [
+		"third_party/persianblocker/PersianBlockerAds-Hosts.txt",
+		"third_party/persianblocker/PersianBlockerTrackers-Hosts.txt",
+		"third_party/persianblocker/PersianBlockerAnnoyances-Domains.txt",
+		"third_party/persianblocker/PersianBlockerHosts.txt"
+	],
+	"adblock_update_urls": [
 		"https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerAds-Hosts.txt",
 		"https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerTrackers-Hosts.txt",
 		"https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerAnnoyances-Domains.txt",

@@ -148,20 +148,40 @@ class ProxyServer:
         self._block_hosts  = load_host_rules(config.get("block_hosts", []))
 
         # ── Adblock host lists ─────────────────────────────────────
-        # adblock_lists: list of URLs to hosts-format blocklists.
-        # Lists are loaded from disk cache at startup (fast), then
-        # re-downloaded in background when the cache is stale.
-        self._adblock_urls: list[str] = [
+        # adblock_lists: local snapshots and/or URL caches to load at startup.
+        # adblock_update_urls: online sources refreshed in the background only.
+        self._adblock_sources: list[str] = [
             str(u).strip() for u in config.get("adblock_lists", []) if u
         ]
-        if self._adblock_urls:
+        self._adblock_update_urls: list[str] = [
+            str(u).strip() for u in config.get("adblock_update_urls", []) if u
+        ]
+        if not self._adblock_update_urls:
+            self._adblock_update_urls = [
+                source for source in self._adblock_sources
+                if source.lower().startswith(("http://", "https://"))
+            ]
+
+        self._adblock_snapshot_domains: list[str] = []
+        if self._adblock_sources or self._adblock_update_urls:
             try:
                 from core.adblock import load_all
-                _ab_domains = load_all(self._adblock_urls)
+
+                self._adblock_snapshot_domains = load_all(self._adblock_sources)
+                cached_update_sources = [
+                    source for source in self._adblock_update_urls
+                    if source not in self._adblock_sources
+                ]
+                _ab_domains = (
+                    self._adblock_snapshot_domains
+                    + load_all(cached_update_sources)
+                )
                 self._adblock_hosts = load_host_rules(_ab_domains)
                 log.info(
-                    "Adblock: %d domains active (%d lists)",
-                    len(_ab_domains), len(self._adblock_urls),
+                    "Adblock: %d domains active (%d startup lists, %d update URLs)",
+                    len(_ab_domains),
+                    len(self._adblock_sources),
+                    len(self._adblock_update_urls),
                 )
             except Exception as exc:
                 log.warning("Adblock: failed to load lists at startup: %s", exc)
@@ -315,18 +335,19 @@ class ProxyServer:
 
     async def _refresh_adblock_lists(self) -> None:
         """Background task: re-download stale adblock lists and hot-swap rules."""
-        if not self._adblock_urls:
+        if not self._adblock_update_urls:
             return
         try:
             from core.adblock import refresh_all
 
             def _update(domains: list[str]) -> None:
-                self._adblock_hosts = load_host_rules(domains)
+                merged = self._adblock_snapshot_domains + domains
+                self._adblock_hosts = load_host_rules(merged)
                 log.info(
-                    "Adblock: rules updated — %d domains active", len(domains)
+                    "Adblock: rules updated — %d domains active", len(merged)
                 )
 
-            await refresh_all(self._adblock_urls, callback=_update)
+            await refresh_all(self._adblock_update_urls, callback=_update)
         except Exception as exc:
             log.warning("Adblock: background refresh failed: %s", exc)
 
@@ -382,7 +403,7 @@ class ProxyServer:
             )
 
         # Kick off adblock refresh in the background — won't block startup.
-        if self._adblock_urls:
+        if self._adblock_update_urls:
             asyncio.create_task(self._refresh_adblock_lists())
 
         try:

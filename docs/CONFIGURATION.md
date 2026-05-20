@@ -107,7 +107,15 @@ Deployment steps are in [Exit Node Guide](exit-node/EXIT_NODE_DEPLOYMENT.md).
 
 ## Ad Blocking
 
-`adblock_lists` accepts host/domain filter list URLs. The default config uses PersianBlocker lists. Remove the list or set it empty if you do not want this behavior.
+`adblock_lists` accepts local host/domain filter list paths and cached URL
+sources. The default config uses a bundled PersianBlocker snapshot under
+`third_party/persianblocker/`, so startup does not depend on
+`raw.githubusercontent.com`.
+
+`adblock_update_urls` accepts optional online list URLs. They are refreshed in
+the background only; if GitHub is unreachable, RelayBridge keeps using the
+bundled snapshot and any existing `adblock_cache/` files. Remove both lists or
+set them empty if you do not want this behavior.
 
 ## Optional Dependencies
 

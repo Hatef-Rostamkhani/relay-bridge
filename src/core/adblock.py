@@ -1,8 +1,9 @@
 """
 Adblock hosts list loader.
 
-Downloads and caches domain blocklists at startup, then merges them into the
-proxy's block-host rules.  Supports two common list formats:
+Loads local domain blocklist snapshots at startup, optionally merges cached
+online updates, then merges them into the proxy's block-host rules. Supports
+two common list formats:
 
   • Bare domain per line   — used by PersianBlocker Hosts files
   • Standard hosts format  — "0.0.0.0 domain.com" / "127.0.0.1 domain.com"
@@ -13,11 +14,11 @@ skipped automatically.
 Usage from proxy_server.py:
     from core.adblock import load_all, refresh_all
 
-    # Synchronous load at startup (uses disk cache if available):
+    # Synchronous load at startup (local files + URL cache only):
     domains = load_all(config["adblock_lists"])
 
-    # Async background refresh (re-downloads stale lists):
-    await refresh_all(config["adblock_lists"], callback=update_fn)
+    # Async background refresh (re-downloads update URLs):
+    await refresh_all(config["adblock_update_urls"], callback=update_fn)
 """
 
 import asyncio
@@ -38,7 +39,8 @@ _DOWNLOAD_TIMEOUT = 30             # seconds per HTTP request
 # Cache sits next to the project root (same dir as main.py / config.json).
 # Anchored to this file's location so the cache is always found regardless
 # of the working directory the user launches the proxy from.
-_CACHE_DIR = pathlib.Path(__file__).parent.parent.parent / "adblock_cache"
+_PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[2]
+_CACHE_DIR = _PROJECT_ROOT / "adblock_cache"
 
 # Patterns used during line parsing
 _IP_RE = re.compile(
@@ -62,6 +64,12 @@ _SKIP_NAMES = frozenset({
 # These addresses appear in standard hosts files as the "null" target —
 # they are address fields, not domain names.
 _HOSTS_PREFIXES = frozenset({"0.0.0.0", "127.0.0.1", "::1", "::0"})
+_URL_RE = re.compile(r"^https?://", re.IGNORECASE)
+
+
+def is_url_source(source: str) -> bool:
+    """Return True when a configured adblock source is an HTTP(S) URL."""
+    return bool(_URL_RE.match(str(source).strip()))
 
 
 # ── List parsing ──────────────────────────────────────────────────────────────
@@ -134,6 +142,20 @@ def _cache_path(url: str) -> pathlib.Path:
     return _CACHE_DIR / f"{h}.txt"
 
 
+def _source_label(source: str) -> str:
+    if is_url_source(source):
+        return source.rstrip("/").rsplit("/", 1)[-1] or source
+    path = pathlib.Path(source)
+    return path.name or source
+
+
+def _resolve_local_path(source: str) -> pathlib.Path:
+    path = pathlib.Path(source)
+    if path.is_absolute():
+        return path
+    return _PROJECT_ROOT / path
+
+
 def _cache_is_stale(url: str, max_age: int) -> bool:
     path = _cache_path(url)
     if not path.exists():
@@ -151,6 +173,16 @@ def _read_cache(url: str) -> list[str] | None:
         return parse_hosts_text(text)
     except OSError:
         return None
+
+
+def _read_local(source: str) -> list[str] | None:
+    path = _resolve_local_path(source)
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        log.warning("Adblock: local list unavailable (%s): %s", source, exc)
+        return None
+    return parse_hosts_text(text)
 
 
 def _write_cache(url: str, text: str) -> None:
@@ -179,44 +211,47 @@ def _fetch(url: str) -> str | None:
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
-def load_all(urls: list[str], max_age: int = _DEFAULT_MAX_AGE) -> list[str]:
-    """Synchronously load all lists.  Called once at proxy startup.
+def load_all(sources: list[str], max_age: int = _DEFAULT_MAX_AGE) -> list[str]:
+    """Synchronously load all lists. Called once at proxy startup.
 
     Strategy:
-      • If a cached copy exists (even if stale), return it immediately so
-        startup is never blocked by network I/O.
-      • If there is NO cached copy for a URL, download it now (one-time,
-        first-run penalty) so the adblock is active from the first request.
+      • Local paths are read directly from the project snapshot.
+      • URL sources use an existing cached copy when present.
+      • URL sources with no cache are skipped until background refresh.
 
-    Stale caches will be refreshed later by ``refresh_all()``.
+    Startup never performs network I/O. Stale or missing URL caches are
+    refreshed later by ``refresh_all()``.
     """
     all_domains: list[str] = []
-    for url in urls:
-        url = url.strip()
-        if not url:
+    for source in sources:
+        source = str(source).strip()
+        if not source:
             continue
-        cached = _read_cache(url)
-        if cached is not None:
-            log.info(
-                "Adblock: %d domains loaded from cache (%s)",
-                len(cached),
-                url.split("/")[-1],
-            )
-            all_domains.extend(cached)
-        else:
-            log.info("Adblock: no cache for %s — downloading...", url.split("/")[-1])
-            text = _fetch(url)
-            if text:
-                _write_cache(url, text)
-                domains = parse_hosts_text(text)
+
+        if is_url_source(source):
+            cached = _read_cache(source)
+            if cached is not None:
                 log.info(
-                    "Adblock: downloaded %d domains from %s",
-                    len(domains),
-                    url.split("/")[-1],
+                    "Adblock: %d domains loaded from cache (%s)",
+                    len(cached),
+                    _source_label(source),
                 )
-                all_domains.extend(domains)
+                all_domains.extend(cached)
             else:
-                log.warning("Adblock: could not load %s — adblock disabled for this list", url)
+                log.info(
+                    "Adblock: no cache for %s; waiting for background refresh",
+                    _source_label(source),
+                )
+            continue
+
+        domains = _read_local(source)
+        if domains is not None:
+            log.info(
+                "Adblock: %d domains loaded from file (%s)",
+                len(domains),
+                source,
+            )
+            all_domains.extend(domains)
     return all_domains
 
 

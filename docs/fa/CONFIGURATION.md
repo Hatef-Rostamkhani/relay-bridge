@@ -107,7 +107,9 @@
 
 ## Adblock
 
-`adblock_lists` لیست URLهای فیلتر host/domain را می‌گیرد. کانفیگ پیش‌فرض از PersianBlocker استفاده می‌کند. اگر این رفتار را نمی‌خواهید، لیست را خالی کنید.
+`adblock_lists` مسیر فایل‌های محلی host/domain filter و cache مربوط به URLها را می‌گیرد. کانفیگ پیش‌فرض از snapshot محلی PersianBlocker در `third_party/persianblocker/` استفاده می‌کند، پس شروع برنامه به `raw.githubusercontent.com` وابسته نیست.
+
+`adblock_update_urls` لیست URLهای اختیاری برای به‌روزرسانی آنلاین است. این URLها فقط در پس‌زمینه refresh می‌شوند؛ اگر GitHub در دسترس نبود، RelayBridge همان snapshot محلی و فایل‌های موجود در `adblock_cache/` را نگه می‌دارد. اگر این رفتار را نمی‌خواهید، هر دو لیست را خالی کنید.
 
 ## وابستگی‌های اختیاری
 

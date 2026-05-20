@@ -1,0 +1,11 @@
+PersianBlocker snapshot
+
+This directory includes unmodified list files from:
+https://github.com/MasterKia/PersianBlocker
+
+Upstream license: GNU Affero General Public License v3.0
+Local license copy: LICENSE-AGPL-3.0.txt
+
+The snapshot is bundled only to avoid a hard runtime dependency on GitHub raw
+content during first startup. Runtime refreshes still use upstream URLs when
+they are reachable.
