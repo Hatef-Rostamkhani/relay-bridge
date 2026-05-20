@@ -40,9 +40,9 @@ if not exist "%VENV_DIR%\Scripts\python.exe" (
 set "VPY=%VENV_DIR%\Scripts\python.exe"
 
 REM -------- Skip dependency install when all required packages are already importable.
-REM Pip install (even with -q) takes ~3-8s every launch; this drops it to ~0.1s
-REM on warm runs.  Falls through to the install path on first run, after a
-REM requirements.txt change, or when any import fails for any reason.
+REM Pip install takes time every launch; this drops warm runs to ~0.1s.
+REM Falls through to the install path on first run, after a requirements.txt
+REM change, or when any import fails for any reason.
 set "DEPS_OK=0"
 "%VPY%" -c "import cryptography, h2, brotli, zstandard" >nul 2>&1
 if !errorlevel!==0 set "DEPS_OK=1"
@@ -50,19 +50,22 @@ if !errorlevel!==0 set "DEPS_OK=1"
 if "!DEPS_OK!"=="1" (
     echo [*] Dependencies already installed — skipping pip install.
 ) else (
-    echo [*] Installing dependencies ...
-    "%VPY%" -m pip install --disable-pip-version-check -q --upgrade pip >nul
-    "%VPY%" -m pip install --disable-pip-version-check -q -r requirements.txt
+    echo [*] Installing dependencies from runflare mirror. Pip download progress will be shown below ...
+    "%VPY%" -m pip install --disable-pip-version-check --upgrade pip ^
+        -i https://mirror-pypi.runflare.com/simple/ ^
+        --trusted-host mirror-pypi.runflare.com
     if errorlevel 1 (
-        echo [!] PyPI install failed. Retrying via runflare mirror ...
-        "%VPY%" -m pip install --disable-pip-version-check -q -r requirements.txt ^
-            -i https://mirror-pypi.runflare.com/simple/ ^
-            --trusted-host mirror-pypi.runflare.com
-        if errorlevel 1 (
-            echo [X] Could not install dependencies.
-            pause
-            exit /b 1
-        )
+        echo [X] Could not upgrade pip.
+        pause
+        exit /b 1
+    )
+    "%VPY%" -m pip install --disable-pip-version-check -r requirements.txt ^
+        -i https://mirror-pypi.runflare.com/simple/ ^
+        --trusted-host mirror-pypi.runflare.com
+    if errorlevel 1 (
+        echo [X] Could not install dependencies.
+        pause
+        exit /b 1
     )
 )
 
